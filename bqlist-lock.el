@@ -81,4 +81,4 @@
   (bqlist-lock-enable-aux (rx "`(")))
 
 (provide 'bqlist-lock)
-;;; bolist-lock ends here
+;;; bqlist-lock ends here
