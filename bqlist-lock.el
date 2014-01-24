@@ -55,7 +55,7 @@
     (not (or (nth 3 state)
              (nth 4 state)))))
 
-(defun bqlist-lock-jit-lock (re beg end)
+(defsubst bqlist-lock-jit-lock (re beg end)
   (save-excursion
     (goto-char beg)
     (while (and (< (point) end)
@@ -73,12 +73,23 @@
               (add-face-text-property b (+ b 2) 'bqlist-lock-face)
               (add-face-text-property (1- e) e  'bqlist-lock-face))))))))
 
-(defun bqlist-lock-enable-aux (re)
-  (jit-lock-register (apply-partially 'bqlist-lock-jit-lock re) t))
+(defun bqlist-lock-jit-lock-function (beg end)
+  (bqlist-lock-jit-lock (rx "`(") beg end))
 
-(defun bqlist-lock-enable () ; XXX: subject to change
-  (interactive)
-  (bqlist-lock-enable-aux (rx "`(")))
+(defvar bqlist-lock-jit-lock-function
+  'bqlist-lock-jit-lock-function)
+
+(define-minor-mode bqlist-lock-mode
+  "Minor mode font lock for backquoted parenthses"
+  :init-value t
+  (if bqlist-lock-mode
+      (jit-lock-register bqlist-lock-jit-lock-function t)
+    (jit-lock-unregister bqlist-lock-jit-lock-function)
+    (jit-lock-refontify)))
+
+(defun bqlist-lock-enable ()
+  "Enable font lock for backquoted parentheses"
+  (bqlist-lock-mode 1))
 
 (provide 'bqlist-lock)
 ;;; bqlist-lock ends here
