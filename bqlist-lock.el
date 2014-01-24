@@ -60,17 +60,17 @@
     (while (and (< (point) end)
                 (re-search-forward re end t))
       (save-excursion
-        ;; XXX: 2 is appropriate here, I believe.
-        (backward-char 2)
-        (when (bqlist-lock--lockable-p (point))
-          (pcase-let ((`(,b . ,e)
-                        (cons (point)
-                              (save-excursion
-                                (forward-sexp)
-                                (point)))))
-            (with-silent-modifications
-              (add-face-text-property b (+ b 2) 'bqlist-lock-face)
-              (add-face-text-property (1- e) e  'bqlist-lock-face))))))))
+        (let ((p (point)))
+          (goto-char (match-beginning 0))
+          (when (bqlist-lock--lockable-p (point))
+            (pcase-let ((`(,b . ,e)
+                          (cons (point)
+                                (save-excursion
+                                  (forward-sexp)
+                                  (point)))))
+              (with-silent-modifications
+                (add-face-text-property b p 'bqlist-lock-face)
+                (add-face-text-property (1- e) e 'bqlist-lock-face)))))))))
 
 (defun bqlist-lock--enable-aux (re)
   (jit-lock-register (apply-partially 'bqlist-lock--jit-lock re) t))
@@ -78,7 +78,7 @@
 ;;;###autoload
 (defun bqlist-lock-enable () ; XXX: subject to change
   (interactive)
-  (bqlist-lock--enable-aux (rx "`(")))
+  (bqlist-lock--enable-aux (rx "`" (syntax open-parenthesis))))
 
 (provide 'bqlist-lock)
 ;;; bqlist-lock ends here
