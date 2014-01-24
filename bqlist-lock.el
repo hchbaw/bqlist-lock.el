@@ -1,6 +1,6 @@
 ;;; bqlist-lock.el --- font lock for backquoted parentheses
 
-;; Copyright (C) 2013 Takeshi Banse <takebi@laafc.net>
+;; Copyright (C) 2013, 2014 Takeshi Banse <takebi@laafc.net>
 ;; Author: Takeshi Banse <takebi@laafc.net>
 ;; Keywords: faces, convenience, lisp, parens, backquote
 
