@@ -1,6 +1,7 @@
 ;;; bqlist-lock.el --- font lock for backquoted parentheses
 
 ;; Copyright (C) 2013, 2014 Takeshi Banse <takebi@laafc.net>
+
 ;; Author: Takeshi Banse <takebi@laafc.net>
 ;; Keywords: faces, convenience, lisp, parens, backquote
 
@@ -25,8 +26,6 @@
 ;; normal parentheses by default lisp syntax highlighting. I want its effect
 ;; on Emacs, too.
 
-;;; Installation:
-;;
 ;; XXX: Subject to change, sorry.
 ;; Please load this file then execute `bqlist-lock-enable' once for each
 ;; buffer for example:
@@ -50,12 +49,12 @@
   "Face for backquoted parentheses."
   :group 'bqlist-lock-faces)
 
-(defsubst bqlist-lock-lockable-p (pos)
+(defsubst bqlist-lock--lockable-p (pos)
   (let ((state (syntax-ppss pos)))
     (not (or (nth 3 state)
              (nth 4 state)))))
 
-(defun bqlist-lock-jit-lock (re beg end)
+(defun bqlist-lock--jit-lock (re beg end)
   (save-excursion
     (goto-char beg)
     (while (and (< (point) end)
@@ -63,7 +62,7 @@
       (save-excursion
         ;; XXX: 2 is appropriate here, I believe.
         (backward-char 2)
-        (when (bqlist-lock-lockable-p (point))
+        (when (bqlist-lock--lockable-p (point))
           (pcase-let ((`(,b . ,e)
                         (cons (point)
                               (save-excursion
@@ -73,12 +72,13 @@
               (add-face-text-property b (+ b 2) 'bqlist-lock-face)
               (add-face-text-property (1- e) e  'bqlist-lock-face))))))))
 
-(defun bqlist-lock-enable-aux (re)
-  (jit-lock-register (apply-partially 'bqlist-lock-jit-lock re) t))
+(defun bqlist-lock--enable-aux (re)
+  (jit-lock-register (apply-partially 'bqlist-lock--jit-lock re) t))
 
+;;;###autoload
 (defun bqlist-lock-enable () ; XXX: subject to change
   (interactive)
-  (bqlist-lock-enable-aux (rx "`(")))
+  (bqlist-lock--enable-aux (rx "`(")))
 
 (provide 'bqlist-lock)
 ;;; bqlist-lock ends here
