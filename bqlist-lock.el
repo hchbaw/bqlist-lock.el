@@ -1,8 +1,9 @@
-;;; bqlist-lock.el --- font lock for backquoted parentheses
+;;; bqlist-lock.el --- font lock for backquoted parentheses -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2013, 2014 Takeshi Banse <takebi@laafc.net>
 
 ;; Author: Takeshi Banse <takebi@laafc.net>
+;; Package-Requires: ((emacs "24.4"))
 ;; Keywords: faces, convenience, lisp, parens, backquote
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -26,12 +27,11 @@
 ;; normal parentheses by default lisp syntax highlighting. I want its effect
 ;; on Emacs, too.
 
-;; XXX: Subject to change, sorry.
-;; Please load this file then execute `bqlist-lock-enable' once for each
+;; Please load this file then execute `enable-bqlist-lock' once for each
 ;; buffer for example:
 ;;
 ;;   (require 'bqlist-lock)
-;;   (add-hook 'emacs-lisp-mode-hook 'bqlist-lock-enable)
+;;   (add-hook 'emacs-lisp-mode-hook 'enable-bqlist-lock)
 
 ;;; Code:
 
@@ -89,13 +89,14 @@
                 (bqlist-lock--set-bqlist-lock-face-property-maybe (1- e) e)
                 ))))))))
 
-(defun bqlist-lock--enable-aux (re)
-  (jit-lock-register (apply-partially 'bqlist-lock--jit-lock re) t))
-
 ;;;###autoload
-(defun bqlist-lock-enable () ; XXX: subject to change
+(defun enable-bqlist-lock ()
+  "Turn on font lock for backquoted parentheses."
   (interactive)
-  (bqlist-lock--enable-aux (rx "`" (syntax open-parenthesis))))
+  (bqlist-lock--enable (rx "`" (syntax open-parenthesis))))
+
+(defun bqlist-lock--enable (re)
+  (jit-lock-register (apply-partially 'bqlist-lock--jit-lock re) t))
 
 (provide 'bqlist-lock)
 ;;; bqlist-lock ends here
