@@ -47,7 +47,7 @@
      (:foreground "LightBlue"))
     (t (:inherit highlight)))
   "Face for backquoted parentheses."
-  :group 'bqlist-lock-faces)
+  :group 'bqlist-lock)
 
 (defsubst bqlist-lock--lockable-p (pos)
   (let ((state (syntax-ppss pos)))
