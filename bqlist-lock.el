@@ -65,6 +65,13 @@
     (not (or (nth 3 state)
              (nth 4 state)))))
 
+(defsubst bqlist-lock--set-bqlist-lock-face-property-maybe (beg end)
+  (let ((prop (get-text-property beg 'face)))
+    (when (cond ((null prop))
+                ((symbolp prop) (not (eq prop 'bqlist-lock-face)))
+                ((consp prop) (not (memq 'bqlist-lock-face prop))))
+      (add-face-text-property beg end 'bqlist-lock-face))))
+
 (defun bqlist-lock--jit-lock-1 (re _beg end)
   (while (and (< (point) end)
               (re-search-forward re end t))
@@ -78,8 +85,8 @@
                      (point))))
             (when e
               (with-silent-modifications
-                (add-face-text-property b p 'bqlist-lock-face)
-                (add-face-text-property (1- e) e 'bqlist-lock-face)
+                (bqlist-lock--set-bqlist-lock-face-property-maybe b p)
+                (bqlist-lock--set-bqlist-lock-face-property-maybe (1- e) e)
                 ))))))))
 
 (defun bqlist-lock--enable-aux (re)
