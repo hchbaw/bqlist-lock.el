@@ -49,29 +49,38 @@
   "Face for backquoted parentheses."
   :group 'bqlist-lock)
 
+(defun bqlist-lock--jit-lock (re beg end)
+  (bqlist-lock--jit-lock-1 re
+                           (progn
+                             (goto-char beg)
+                             (ignore-errors (beginning-of-defun))
+                             (min (point) beg))
+                           (save-excursion
+                             (goto-char end)
+                             (ignore-errors (end-of-defun))
+                             (max end (point)))))
+
 (defsubst bqlist-lock--lockable-p (pos)
   (let ((state (syntax-ppss pos)))
     (not (or (nth 3 state)
              (nth 4 state)))))
 
-(defun bqlist-lock--jit-lock (re beg end)
-  (save-excursion
-    (goto-char beg)
-    (while (and (< (point) end)
-                (re-search-forward re end t))
-      (save-excursion
-        (let ((p (point)))
-          (goto-char (match-beginning 0))
-          (when (bqlist-lock--lockable-p (point))
-            (let ((b (point))
-                  (e (ignore-errors
-                       (forward-sexp)
-                       (point))))
-              (when e
-                (with-silent-modifications
-                  (add-face-text-property b p 'bqlist-lock-face)
-                  (add-face-text-property (1- e) e 'bqlist-lock-face)
-                  )))))))))
+(defun bqlist-lock--jit-lock-1 (re _beg end)
+  (while (and (< (point) end)
+              (re-search-forward re end t))
+    (save-excursion
+      (let ((p (point)))
+        (goto-char (match-beginning 0))
+        (when (bqlist-lock--lockable-p (point))
+          (let ((b (point))
+                (e (ignore-errors
+                     (forward-sexp)
+                     (point))))
+            (when e
+              (with-silent-modifications
+                (add-face-text-property b p 'bqlist-lock-face)
+                (add-face-text-property (1- e) e 'bqlist-lock-face)
+                ))))))))
 
 (defun bqlist-lock--enable-aux (re)
   (jit-lock-register (apply-partially 'bqlist-lock--jit-lock re) t))
