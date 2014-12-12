@@ -63,14 +63,15 @@
         (let ((p (point)))
           (goto-char (match-beginning 0))
           (when (bqlist-lock--lockable-p (point))
-            (pcase-let ((`(,b . ,e)
-                          (cons (point)
-                                (save-excursion
-                                  (forward-sexp)
-                                  (point)))))
-              (with-silent-modifications
-                (add-face-text-property b p 'bqlist-lock-face)
-                (add-face-text-property (1- e) e 'bqlist-lock-face)))))))))
+            (let ((b (point))
+                  (e (ignore-errors
+                       (forward-sexp)
+                       (point))))
+              (when e
+                (with-silent-modifications
+                  (add-face-text-property b p 'bqlist-lock-face)
+                  (add-face-text-property (1- e) e 'bqlist-lock-face)
+                  )))))))))
 
 (defun bqlist-lock--enable-aux (re)
   (jit-lock-register (apply-partially 'bqlist-lock--jit-lock re) t))
