@@ -27,11 +27,11 @@
 ;; normal parentheses by default lisp syntax highlighting. I want its effect
 ;; on Emacs, too.
 
-;; Please load this file then execute `enable-bqlist-lock' once for each
+;; Please load this file then execute `bqlist-lock-enable' once for each
 ;; buffer for example:
 ;;
 ;;   (require 'bqlist-lock)
-;;   (add-hook 'emacs-lisp-mode-hook 'enable-bqlist-lock)
+;;   (add-hook 'emacs-lisp-mode-hook 'bqlist-lock-enable)
 
 ;;; Code:
 
@@ -90,12 +90,12 @@
                 ))))))))
 
 ;;;###autoload
-(defun enable-bqlist-lock ()
+(defun bqlist-lock-enable ()
   "Turn on font lock for backquoted parentheses."
   (interactive)
-  (bqlist-lock--enable (rx "`" (syntax open-parenthesis))))
+  (bqlist-lock-enable-aux (rx "`" (syntax open-parenthesis))))
 
-(defun bqlist-lock--enable (re)
+(defun bqlist-lock-enable-aux (re)
   (jit-lock-register (apply-partially 'bqlist-lock--jit-lock re) t))
 
 (provide 'bqlist-lock)
